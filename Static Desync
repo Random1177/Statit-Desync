@@ -1,0 +1,60 @@
+local ui_braindead_enable = ui.new_checkbox("AA", "Anti-aimbot angles", "Automatic Config")
+local ui_switch_enable = ui.new_checkbox("AA", "Anti-aimbot angles", "Enable Switch")
+local ui_hotkey_switch = ui.new_hotkey("AA", "Anti-aimbot angles", "Switch Hotkey")
+
+local ui_yaw_ref, ui_yaw_slide_ref = ui.reference("AA", "Anti-aimbot angles", "Fake yaw")
+local ui_real_yaw_ref, ui_real_yaw_slide_ref = ui.reference("AA", "Anti-aimbot angles", "Yaw")
+
+local ui_edge_ref = ui.reference("AA", "Anti-aimbot angles", "Edge yaw")
+local ui_freestand_ref = ui.reference("AA", "Anti-aimbot angles", "Freestanding")
+local ui_yaw_running_ref = ui.reference("AA", "Anti-aimbot angles", "Yaw while running")
+local ui_yaw_base_ref = ui.reference("AA", "Anti-aimbot angles", "Yaw base")
+local ui_yaw_jitter_ref = ui.reference("AA", "Anti-aimbot angles", "Yaw jitter")
+
+local ui_limit_ref = ui.reference("AA", "Fake lag", "Limit")
+local ui_triggers_ref = ui.reference("AA", "Fake lag", "Customize triggers")
+local ui_fakelag_ref = ui.reference("AA", "Fake lag", "Enabled")
+local ui_amount_ref = ui.reference("AA", "Fake lag", "Amount")
+
+function set_if_not(ui_reference, value)
+    if ui.get(ui_reference) ~= value then
+        ui.set(ui_reference, value)
+    end
+end
+
+client.set_event_callback("paint", function(ctx)
+    if not ui.get(ui_switch_enable) then
+        return
+    end
+
+    if ui.get(ui_yaw_ref) ~= "180" then
+        ui.set(ui_yaw_ref, "180")
+    end
+        
+    if ui.get(ui_hotkey_switch) then
+        renderer.indicator(255, 255, 255, 255, "RIGHT")
+        if ui.get(ui_yaw_slide_ref) ~= 90 then
+            ui.set(ui_yaw_slide_ref, 90)
+        end
+    elseif not ui.get(ui_hotkey_switch) then
+        renderer.indicator(255, 255, 255, 255, "LEFT")
+        if ui.get(ui_yaw_slide_ref) ~= -90 then
+            ui.set(ui_yaw_slide_ref, -90)
+        end
+    end
+    
+    --braindead mode, automatically configs because people don't have brains i guess
+    if ui.get(ui_braindead_enable) then
+        set_if_not(ui_real_yaw_ref, "180")
+        set_if_not(ui_real_yaw_slide_ref, 0)
+        set_if_not(ui_edge_ref, "Off")
+        set_if_not(ui_freestand_ref, "-")
+        set_if_not(ui_yaw_running_ref, "Off")
+        set_if_not(ui_yaw_base_ref, "Local view")
+        set_if_not(ui_yaw_jitter_ref, "Off")
+        set_if_not(ui_limit_ref, 4) --change this if u want
+        set_if_not(ui_triggers_ref, false)
+        set_if_not(ui_fakelag_ref, true)
+        set_if_not(ui_amount_ref, "Maximum")
+    end
+end)
